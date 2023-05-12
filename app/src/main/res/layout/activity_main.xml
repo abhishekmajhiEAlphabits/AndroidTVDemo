@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_browse_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:deviceIds="tv"
+    android:keepScreenOn="false"
+    tools:ignore="MergeRootFrame">
+
+
+
+    <TextView
+        android:id="@+id/id1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:text="Screen Timer"
+        android:textColor="@color/lb_tv_white"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+
+    <Button
+
+        android:id="@+id/btnLock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="lockPhone"
+        android:text="TURN OFF" />
+</FrameLayout>
