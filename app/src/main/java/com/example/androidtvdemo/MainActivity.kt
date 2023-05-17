@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.*
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Bundle
@@ -14,11 +13,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
-import java.lang.Compiler.command
 import java.util.*
-import java.util.jar.Manifest
 
 
 /**
@@ -136,13 +132,35 @@ class MainActivity : FragmentActivity() {
 
     override fun onPause() {
         super.onPause()
-        Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, timeOutValue)
+//        val isInteractive = (getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
+
+
+        if (isTimerSet) {
+
+            //Here Make a Display over other apps screen which will show on 10sec which will again have a counter of 10sec.On load of that screen
+            //give the  Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0") code.
+
+            Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
+        } else {
+            Settings.System.putString(
+                contentResolver,
+                Settings.System.SCREEN_OFF_TIMEOUT,
+                timeOutValue
+            )
+        }
+
     }
 
     override fun onResume() {
         super.onResume()
         if (isTimerSet) {
             Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
+        } else {
+            Settings.System.putString(
+                contentResolver,
+                Settings.System.SCREEN_OFF_TIMEOUT,
+                timeOutValue
+            )
         }
     }
 
