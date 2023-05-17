@@ -1,16 +1,12 @@
 package com.example.androidtvdemo
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
-import android.os.Build
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -20,7 +16,9 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
+import java.lang.Compiler.command
 import java.util.*
+import java.util.jar.Manifest
 
 
 /**
@@ -29,12 +27,16 @@ import java.util.*
 class MainActivity : FragmentActivity() {
 
     private lateinit var btnLock: Button
+    private var isTimerSet = false
 
-//    var timeOutValue: Int? = null
-//    private lateinit var wakeLock: PowerManager.WakeLock
-//    private lateinit var powerManager: PowerManager;
+    var timeOutValue: String? = null
+    private lateinit var wakeLock: PowerManager.WakeLock
+    private lateinit var powerManager: PowerManager;
 //    val RESULT_ENABLE = 1
 //    private lateinit var relativeLayout: FrameLayout;
+
+    private lateinit var sensorManager: SensorManager
+    private var sensor: Sensor? = null
 
 
     @SuppressLint("MissingInflatedId")
@@ -48,7 +50,8 @@ class MainActivity : FragmentActivity() {
 //                .commitNow()
 //        }
         btnLock = findViewById<Button>(R.id.btnLock)
-
+        timeOutValue =
+            Settings.System.getString(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT)
 //        if (ActivityCompat.checkSelfPermission(
 //                applicationContext,
 //                Manifest.permission.WRITE_SETTINGS
@@ -94,11 +97,22 @@ class MainActivity : FragmentActivity() {
     @SuppressLint("InvalidWakeLockTag", "ShortAlarm")
     fun lockPhone(view: View?) {
 
+
+//        val commandToRun = "input keyevent 24"
+//        try {
+//            val process: Process = Runtime.getRuntime().exec(commandToRun)
+////            process.waitFor()
+//        }
+//       catch (e:Exception){
+//           Log.d("abhi","exception: $e")
+//       }
+
         try {
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, 0);
+            Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
+            isTimerSet = true
             Toast.makeText(
                 applicationContext,
-                "System will Turn Off after 10 seconds",
+                "System will Turn Off after 10 seconds:$timeOutValue",
                 Toast.LENGTH_LONG
             ).show()
 
@@ -120,6 +134,40 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, timeOutValue)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isTimerSet) {
+            Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
+        }
+    }
+
+    fun turnScreenOff(context: Context) {
+
+
+//        val policyManager = context
+//            .getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+//        val adminReceiver = ComponentName(
+//            context,
+//            DeviceAdmin::class.java
+//        )
+//        val admin = policyManager.isAdminActive(adminReceiver)
+//        if (admin) {
+//            Log.i("abhi", "Going to sleep now.")
+//            policyManager.lockNow()
+//        } else {
+//            Log.i("abhi", "Not an admin")
+//            Toast.makeText(
+//                context, "Not an admin",
+//                Toast.LENGTH_LONG
+//            ).show()
+//        }
+    }
+
     companion object {
         private var TAG = "ScreenTimer"
     }
@@ -129,11 +177,11 @@ class MainActivity : FragmentActivity() {
         lateinit var wakeLock: PowerManager.WakeLock
         override fun onReceive(context: Context, intent: Intent) {
             try {
-                Settings.System.putInt(
-                    context.getContentResolver(),
-                    Settings.System.SCREEN_OFF_TIMEOUT,
-                    1000 * 60 * 5
-                );
+//                Settings.System.putInt(
+//                    context.getContentResolver(),
+//                    Settings.System.SCREEN_OFF_TIMEOUT,
+//                    1000 * 60 * 5
+//                );
 
                 powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
                 wakeLock = powerManager.newWakeLock(
