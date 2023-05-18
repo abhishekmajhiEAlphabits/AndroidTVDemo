@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
     <uses-permission android:name="android.permission.DEVICE_POWER"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
@@ -35,6 +38,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTVDemo" >
+        <!-- register the service -->
+        <service
+            android:name=".ForegroundService"
+            android:enabled="true"
+            android:exported="true"/>
         <activity
             android:name=".MainActivity"
             android:banner="@drawable/movie"
@@ -58,22 +66,25 @@
         <activity
             android:name=".BrowseErrorActivity"
             android:exported="false" />
-        <receiver
-            android:name= ".DeviceAdmin"
-            android:label= "@string/app_name"
-            android:permission= "android.permission.BIND_DEVICE_ADMIN"
-            android:exported="true">
-            <meta-data
-                android:name= "android.app.device_admin"
-                android:resource= "@xml/policies" />
-            <intent-filter>
-                <action android:name= "android.app.action.DEVICE_ADMIN_ENABLED" />
-            </intent-filter>
-        </receiver>
+<!--        <receiver-->
+<!--            android:name= ".DeviceAdmin"-->
+<!--            android:label= "@string/app_name"-->
+<!--            android:permission= "android.permission.BIND_DEVICE_ADMIN"-->
+<!--            android:exported="true">-->
+<!--            <meta-data-->
+<!--                android:name= "android.app.device_admin"-->
+<!--                android:resource= "@xml/policies" />-->
+<!--            <intent-filter>-->
+<!--                <action android:name= "android.app.action.DEVICE_ADMIN_ENABLED" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
         <receiver android:name=".MainActivity$MyBroadcastReceiver">
 <!--            <action android:name="com.example.androidtvdemo.START_ALARM" >-->
 <!--            </action>-->
         </receiver>
+        <receiver android:name=".ShutDownReceiver"/>
+        <receiver android:name=".WakeUpReceiver"/>
+        <receiver android:name=".TimeOutReceiver"/>
     </application>
 
 </manifest>
