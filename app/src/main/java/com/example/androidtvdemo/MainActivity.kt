@@ -54,6 +54,19 @@ class MainActivity : FragmentActivity() {
         try {
             checkOverlayPermission();
             checkWritePermission()
+
+            Log.d("abhi", "10 sec set")
+            powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+            wakeLock = powerManager.newWakeLock(
+                PowerManager.FULL_WAKE_LOCK or
+                        PowerManager.ACQUIRE_CAUSES_WAKEUP or
+                        PowerManager.ON_AFTER_RELEASE, "appname::WakeLock"
+            )
+
+
+            wakeLock.acquire()
+//                wakeLock.release()
+
         } catch (e: Exception) {
             Toast.makeText(
                 this,
@@ -119,13 +132,16 @@ class MainActivity : FragmentActivity() {
 //       }
 
         try {
+            if (wakeLock.isHeld) {
+                wakeLock.release()
+            }
 //            Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
             isTimerSet = true
-            Toast.makeText(
-                applicationContext,
-                "System will Turn Off after 10 seconds",
-                Toast.LENGTH_LONG
-            ).show()
+//            Toast.makeText(
+//                applicationContext,
+//                "System will Turn Off after 10 seconds",
+//                Toast.LENGTH_LONG
+//            ).show()
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val i = Intent(applicationContext, MyBroadcastReceiver::class.java)
@@ -186,6 +202,10 @@ class MainActivity : FragmentActivity() {
             if (isTimerSet) {
 //            Settings.System.putString(contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, "0")
                 Log.d("abhi", "Timer set..onResume")
+                if (!wakeLock.isHeld) {
+                    wakeLock.acquire()
+                    Log.d("abhi", "Timer set..onResume..wakelock acquire")
+                }
             } else {
                 Settings.System.putString(
                     contentResolver,
@@ -237,7 +257,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    // method to ask user to grant the Overlay permission
+    // method to ask user to grant the Write System Settings permission
     fun checkWritePermission() {
         if (!Settings.System.canWrite(this)) {
             // send user to the device settings
